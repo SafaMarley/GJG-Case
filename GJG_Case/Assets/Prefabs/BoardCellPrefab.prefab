@@ -46,10 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5932422e1d0e5da43947d3a5cc53a141, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAvailable: 0
   coordinateX: 0
   coordinateY: 0
-  itemPrefab: {fileID: 3618925732000077407, guid: 4a7aa68ad618b6443b2e4448e91c071d, type: 3}
+  itemPrefab: {fileID: 811659050595542329, guid: 4a7aa68ad618b6443b2e4448e91c071d, type: 3}
 --- !u!212 &8700120363561939085
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -310,7 +310,7 @@ MonoBehaviour:
   boardTransform: {fileID: 1138589232}
   numberOfColumns: 5
   numberOfRows: 5
-  validItems: 010000000200000003000000040000000500000006000000
+  validItems: 000000000100000002000000030000000400000005000000
 --- !u!4 &2088605166
 Transform:
   m_ObjectHideFlags: 0

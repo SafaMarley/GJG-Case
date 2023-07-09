@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Enums;
 using Gameplay;
 using Managers.Base;
-using UnityEngine;
 
 namespace Managers
 {
@@ -27,9 +26,8 @@ namespace Managers
             
             foreach (BoardCell boardCell in neighbourCell.Neighbours.Values)
             {
-                if (itemType == boardCell.ItemInside.ItemType)
+                if (boardCell.ItemInside && itemType == boardCell.ItemInside.ItemType)
                 {
-                    Debug.Log(boardCell.name);
                     CheckBoardForMatchingCluster(boardCell, itemType, matchingCells);
                 }
             }

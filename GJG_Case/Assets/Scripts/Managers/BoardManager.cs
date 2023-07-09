@@ -61,5 +61,36 @@ namespace Managers
                 }
             }
         }
+
+        public void SettleBoard(HashSet<int> affectedColumnIndices)
+        {
+            foreach (int columnIndex in affectedColumnIndices)
+            {
+                int dropDistance = 0;
+                for (int i = 0; i < numberOfRows; i++)
+                {
+                    BoardCell cell = _boardCells[columnIndex, i];
+                    if (!_boardCells[columnIndex, i].ItemInside)
+                    {
+                        ++dropDistance;
+                    }
+                    else
+                    {
+                        if (dropDistance > 0)
+                        {
+                            _boardCells[columnIndex, i - dropDistance].SetItemInside(cell.ItemInside);
+                            cell.OnItemFall();
+                        }
+                    }
+                }
+
+                for (int i = 1; i <= dropDistance; i++)
+                {
+                    BoardCell additionCell = _boardCells[columnIndex, numberOfRows - i];
+                    additionCell.SetItemInside(PoolingManager.Instance.GetFromPool());
+                    additionCell.ItemInside.Initialize((ItemType) Random.Range(0, validItems.Count));
+                }
+            }
+        }
     }
 }

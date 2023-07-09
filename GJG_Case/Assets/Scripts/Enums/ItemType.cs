@@ -2,8 +2,7 @@ namespace Enums
 {
     public enum ItemType
     {
-        None,
-        Red,
+        Red = 0,
         Pink,
         Yellow,
         Green,

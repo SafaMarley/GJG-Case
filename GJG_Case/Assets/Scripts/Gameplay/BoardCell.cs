@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Enums;
-using Managers;
 using UnityEngine;
 
 namespace Gameplay
@@ -15,7 +14,6 @@ namespace Gameplay
 
     public class BoardCell : MonoBehaviour
     {
-        public bool isAvailable;
         public int coordinateX;
         public int coordinateY;
 
@@ -34,7 +32,6 @@ namespace Gameplay
             gameObject.name = "boardCell: " + x + " : " + y;
             _itemInside = Instantiate(itemPrefab, transform);
             _itemInside.Initialize(itemType);
-            isAvailable = false;
         }
 
         public void SetItemInside(Item itemInside)
@@ -42,6 +39,7 @@ namespace Gameplay
             _itemInside = itemInside;
             Transform itemInsideTransform = _itemInside.transform;
             itemInsideTransform.SetParent(transform);
+            itemInsideTransform.localPosition = Vector2.zero;
         }
 
         public void AssignNeighbourCells(NeighbourCellDirection neighbourCellDirection, BoardCell boardCell)
@@ -55,13 +53,20 @@ namespace Gameplay
             _itemInside.transform.parent = null;
             _itemInside.gameObject.SetActive(false);
             _itemInside = null;
-            isAvailable = true;
             return tempItemHolder;
+        }
+
+        public void OnItemFall()
+        {
+            _itemInside = null;
         }
 
         private void OnMouseDown()
         {
-            MatchManager.Instance.CheckBoardForMatchingCluster(this);
+            if (_itemInside)
+            {
+                _itemInside.OnInteract(this);
+            }
         }
     }
 }

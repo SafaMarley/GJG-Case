@@ -1,27 +1,32 @@
 using System.Collections.Generic;
 using Gameplay;
 using Managers.Base;
-using UnityEngine;
 
 namespace Managers
 {
     public class PoolingManager : MonoSingleton<PoolingManager>
     {
-        private List<GameObject> _pooledItems = new List<GameObject>();
+        private List<Item> _pooledItems = new List<Item>();
 
         public void AddToPool(List<BoardCell> matchingBoardCells)
         {
+            HashSet<int> affectedColumnIndices = new HashSet<int>();
+            
             foreach (BoardCell boardCell in matchingBoardCells)
             {
-                _pooledItems.Add(boardCell.DeactivateItemInside().gameObject); 
+                affectedColumnIndices.Add(boardCell.coordinateX);
+                _pooledItems.Add(boardCell.DeactivateItemInside()); 
             }
+            
+            BoardManager.Instance.SettleBoard(affectedColumnIndices);
         }
 
-        public GameObject GetFromPool()
+        public Item GetFromPool()
         {
-            GameObject tempGameObjectHolder = _pooledItems[0];
+            Item tempItemHolder = _pooledItems[0];
             _pooledItems.RemoveAt(0);
-            return tempGameObjectHolder;
+            tempItemHolder.gameObject.SetActive(true);
+            return tempItemHolder;
         }
     }
 }
