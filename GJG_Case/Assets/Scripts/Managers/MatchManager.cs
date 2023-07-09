@@ -7,16 +7,16 @@ namespace Managers
 {
     public class MatchManager : MonoSingleton<MatchManager>
     {
-        public void CheckBoardForMatchingCluster(BoardCell tappedCell)
+        public List<BoardCell> CheckBoardForMatchingClusters(BoardCell tappedCell)
         {
             List<BoardCell> matchingCells = new List<BoardCell>();
 
-            CheckBoardForMatchingCluster(tappedCell, tappedCell.ItemInside.ItemType, matchingCells);
+            CheckBoardForMatchingClusters(tappedCell, tappedCell.ItemInside.GetItemType, matchingCells);
             
-            PoolingManager.Instance.AddToPool(matchingCells);
+            return matchingCells;
         }
 
-        private void CheckBoardForMatchingCluster(BoardCell neighbourCell, ItemType itemType, List<BoardCell> matchingCells)
+        private void CheckBoardForMatchingClusters(BoardCell neighbourCell, ItemType itemType, List<BoardCell> matchingCells)
         {
             if (matchingCells.Contains(neighbourCell))
             {
@@ -26,9 +26,9 @@ namespace Managers
             
             foreach (BoardCell boardCell in neighbourCell.Neighbours.Values)
             {
-                if (boardCell.ItemInside && itemType == boardCell.ItemInside.ItemType)
+                if (boardCell.ItemInside && itemType == boardCell.ItemInside.GetItemType)
                 {
-                    CheckBoardForMatchingCluster(boardCell, itemType, matchingCells);
+                    CheckBoardForMatchingClusters(boardCell, itemType, matchingCells);
                 }
             }
         }

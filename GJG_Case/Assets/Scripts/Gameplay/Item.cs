@@ -6,21 +6,23 @@ namespace Gameplay
 {
     public abstract class Item : MonoBehaviour
     {
-        private SpriteRenderer _spriteRenderer;
-        private ItemType _itemType;
-        public ItemType ItemType { get=> _itemType; }
+        protected SpriteRenderer SpriteRenderer;
+        protected ItemType ItemType;
+        public ItemType GetItemType { get=> ItemType; }
 
         private void Awake()
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            SpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         public void Initialize(ItemType itemType)
         {
-            _itemType = itemType;
-            _spriteRenderer.sprite = SpriteManager.Instance.GetDefaultItemImage(_itemType);
+            ItemType = itemType;
+            SpriteRenderer.sprite = SpriteManager.Instance.GetDefaultItemImage(ItemType);
         }
 
         public abstract void OnInteract(BoardCell boardCell);
+        
+        public abstract void Upgrade(int level);
     }
 }

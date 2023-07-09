@@ -8,13 +8,19 @@ namespace Managers
 {
     public class BoardManager : MonoSingleton<BoardManager>
     {
-        [SerializeField] private BoardCell boardCellPrefab;
-        [SerializeField] private Transform boardTransform;
+        [Header("Parameters")]
         [SerializeField] private int numberOfColumns;
         [SerializeField] private int numberOfRows;
         [SerializeField] private List<ItemType> validItems;
+        [SerializeField] private int firstThreshold;
+        [SerializeField] private int secondThreshold;
+        [SerializeField] private int thirdThreshold;
+
         
-        
+        [Header("References")]
+        [SerializeField] private BoardCell boardCellPrefab;
+        [SerializeField] private Transform boardTransform;
+
         private BoardCell[,] _boardCells;
 
         private void Start()
@@ -37,6 +43,7 @@ namespace Managers
                     _boardCells[j, i].Initialize(j, i, validItems[Random.Range(0, validItems.Count)]);
                 }
             }
+            HighlightBoard();
         }
 
         private void AssignCellNeighbours()
@@ -89,6 +96,65 @@ namespace Managers
                     BoardCell additionCell = _boardCells[columnIndex, numberOfRows - i];
                     additionCell.SetItemInside(PoolingManager.Instance.GetFromPool());
                     additionCell.ItemInside.Initialize((ItemType) Random.Range(0, validItems.Count));
+                }
+            }
+            
+            HighlightBoard();
+        }
+
+        private void HighlightBoard()
+        {
+            for (int i = 0; i < numberOfRows; i++)
+            {
+                for (int j = 0; j < numberOfColumns; j++)
+                {
+                    BoardCell currentCell = _boardCells[j, i];
+                    if (!currentCell.isVisited)
+                    {
+                        List<BoardCell> cellsInCluster =
+                            MatchManager.Instance.CheckBoardForMatchingClusters(currentCell);
+                        Debug.Log(cellsInCluster.Count);
+                        if (cellsInCluster.Count > thirdThreshold)
+                        {
+                            foreach (BoardCell cell in cellsInCluster)
+                            {
+                                cell.isVisited = true;
+                                cell.ItemInside.Upgrade(3);
+                            }
+                        }
+                        else if (cellsInCluster.Count > secondThreshold)
+                        {
+                            foreach (BoardCell cell in cellsInCluster)
+                            {
+                                cell.isVisited = true;
+                                cell.ItemInside.Upgrade(2);
+                            }
+                        }
+                        else if (cellsInCluster.Count > firstThreshold)
+                        {
+                            foreach (BoardCell cell in cellsInCluster)
+                            {
+                                cell.isVisited = true;
+                                cell.ItemInside.Upgrade(1);
+                            }
+                        }
+                        else
+                        {
+                            foreach (BoardCell cell in cellsInCluster)
+                            {
+                                cell.isVisited = true;
+                                cell.ItemInside.Upgrade(0);
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < numberOfRows; i++)
+            {
+                for (int j = 0; j < numberOfColumns; j++)
+                {
+                    _boardCells[j, i].isVisited = false;
                 }
             }
         }
