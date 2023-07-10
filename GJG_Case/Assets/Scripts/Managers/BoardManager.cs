@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Enums;
 using Gameplay;
@@ -113,10 +112,14 @@ namespace Managers
                     if (!currentCell.isVisited)
                     {
                         List<BoardCell> cellsInCluster = MatchManager.Instance.CheckBoardForMatchingClusters(currentCell);
+                        
                         if (cellsInCluster.Count == 1)
                         {
+                            cellsInCluster[0].isVisited = false;
+                            cellsInCluster[0].ItemInside.Upgrade(0);
                             continue;
                         }
+                        
                         isDeadLock = false;
                         if (cellsInCluster.Count > thirdThreshold)
                         {
@@ -175,11 +178,19 @@ namespace Managers
                 for (int j = numberOfColumns - 1; j > 0; j--)
                 {
                     Item tempItemHolder = _boardCells[i, j].ItemInside;
-                    BoardCell randomCell = _boardCells[i, Random.Range(0, j)];
+                    BoardCell randomCell = _boardCells[Random.Range(0, numberOfRows), Random.Range(0, j)];
                     _boardCells[i, j].SetItemInside(randomCell.ItemInside);
                     randomCell.SetItemInside(tempItemHolder);
                 }
             }
+            
+            BoardCell randomCenterCell = _boardCells[Random.Range(0, numberOfRows), Random.Range(0, numberOfColumns)];
+
+            foreach (BoardCell neighbourCell in randomCenterCell.Neighbours.Values)
+            {
+                neighbourCell.ItemInside.Initialize(randomCenterCell.ItemInside.GetItemType);
+            }
+            
             HighlightBoard();
         }
     }
