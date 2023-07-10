@@ -35,12 +35,22 @@ namespace Gameplay
             _itemInside.Initialize(itemType);
         }
 
+        public void SpawnItemInside(Item itemInside, ItemType itemType)
+        {
+            _itemInside = itemInside;
+            Transform itemInsideTransform = _itemInside.transform;
+            itemInsideTransform.SetParent(transform);
+            itemInsideTransform.localPosition = Vector3.zero;
+            ItemInside.Initialize(itemType);
+            LeanTween.scale(itemInsideTransform.gameObject, Vector3.one, .25f).setDelay(0.25f).setEase(LeanTweenType.easeOutElastic);
+        }
+
         public void SetItemInside(Item itemInside)
         {
             _itemInside = itemInside;
             Transform itemInsideTransform = _itemInside.transform;
             itemInsideTransform.SetParent(transform);
-            itemInsideTransform.localPosition = Vector2.zero;
+            LeanTween.moveLocal(itemInsideTransform.gameObject, Vector3.zero, 0.25f).setEase(LeanTweenType.easeInOutQuint);
         }
 
         public void AssignNeighbourCells(NeighbourCellDirection neighbourCellDirection, BoardCell boardCell)

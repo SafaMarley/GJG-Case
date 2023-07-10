@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Enums;
 using Gameplay;
 using Managers.Base;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Managers
 {
@@ -27,6 +29,7 @@ namespace Managers
         {
             BuildBoard();
             AssignCellNeighbours();
+            HighlightBoard();
         }
 
         private void BuildBoard()
@@ -43,7 +46,6 @@ namespace Managers
                     _boardCells[j, i].Initialize(j, i, validItems[Random.Range(0, validItems.Count)]);
                 }
             }
-            HighlightBoard();
         }
 
         private void AssignCellNeighbours()
@@ -93,9 +95,7 @@ namespace Managers
 
                 for (int i = 1; i <= dropDistance; i++)
                 {
-                    BoardCell additionCell = _boardCells[columnIndex, numberOfRows - i];
-                    additionCell.SetItemInside(PoolingManager.Instance.GetFromPool());
-                    additionCell.ItemInside.Initialize((ItemType) Random.Range(0, validItems.Count));
+                    _boardCells[columnIndex, numberOfRows - i].SpawnItemInside(PoolingManager.Instance.GetFromPool(), (ItemType) Random.Range(0, validItems.Count));
                 }
             }
             
@@ -104,6 +104,7 @@ namespace Managers
 
         private void HighlightBoard()
         {
+            bool isDeadLock = true;
             for (int i = 0; i < numberOfRows; i++)
             {
                 for (int j = 0; j < numberOfColumns; j++)
@@ -111,9 +112,12 @@ namespace Managers
                     BoardCell currentCell = _boardCells[j, i];
                     if (!currentCell.isVisited)
                     {
-                        List<BoardCell> cellsInCluster =
-                            MatchManager.Instance.CheckBoardForMatchingClusters(currentCell);
-                        Debug.Log(cellsInCluster.Count);
+                        List<BoardCell> cellsInCluster = MatchManager.Instance.CheckBoardForMatchingClusters(currentCell);
+                        if (cellsInCluster.Count == 1)
+                        {
+                            continue;
+                        }
+                        isDeadLock = false;
                         if (cellsInCluster.Count > thirdThreshold)
                         {
                             foreach (BoardCell cell in cellsInCluster)
@@ -157,6 +161,26 @@ namespace Managers
                     _boardCells[j, i].isVisited = false;
                 }
             }
+
+            if (isDeadLock)
+            {
+                ShuffleBoard();
+            }
+        }
+
+        private void ShuffleBoard()
+        {
+            for (int i = 0; i < numberOfRows; i++)
+            {
+                for (int j = numberOfColumns - 1; j > 0; j--)
+                {
+                    Item tempItemHolder = _boardCells[i, j].ItemInside;
+                    BoardCell randomCell = _boardCells[i, Random.Range(0, j)];
+                    _boardCells[i, j].SetItemInside(randomCell.ItemInside);
+                    randomCell.SetItemInside(tempItemHolder);
+                }
+            }
+            HighlightBoard();
         }
     }
 }

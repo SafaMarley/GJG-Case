@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Gameplay;
 using Managers.Base;
+using UnityEngine;
 
 namespace Managers
 {
@@ -24,6 +25,7 @@ namespace Managers
         public Item GetFromPool()
         {
             Item tempItemHolder = _pooledItems[0];
+            tempItemHolder.transform.localScale = Vector3.zero;
             _pooledItems.RemoveAt(0);
             tempItemHolder.gameObject.SetActive(true);
             return tempItemHolder;
