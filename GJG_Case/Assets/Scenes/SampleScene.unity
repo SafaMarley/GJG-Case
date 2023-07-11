@@ -551,8 +551,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cfaed6129713141bed956c2beeffa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfColumns: 10
-  numberOfRows: 10
+  numberOfColumns: 6
+  numberOfRows: 2
   validItems: 000000000100000002000000030000000400000005000000
   firstThreshold: 4
   secondThreshold: 6

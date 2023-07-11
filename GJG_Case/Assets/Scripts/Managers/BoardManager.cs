@@ -59,7 +59,7 @@ namespace Managers
                 {
                     boardCell.AssignNeighbourCells(NeighbourCellDirection.Left, _boardCells[boardCell.coordinateX - 1, boardCell.coordinateY]);
                 }
-                if (boardCell.coordinateY != numberOfColumns - 1)
+                if (boardCell.coordinateY != numberOfRows - 1)
                 {
                     boardCell.AssignNeighbourCells(NeighbourCellDirection.Up, _boardCells[boardCell.coordinateX, boardCell.coordinateY + 1]);
                 }
@@ -109,59 +109,44 @@ namespace Managers
                 for (int j = 0; j < numberOfColumns; j++)
                 {
                     BoardCell currentCell = _boardCells[j, i];
-                    if (!currentCell.isVisited)
+                    
+                    List<BoardCell> cellsInCluster = MatchManager.Instance.CheckBoardForMatchingClusters(currentCell);
+                        
+                    if (cellsInCluster.Count == 1)
                     {
-                        List<BoardCell> cellsInCluster = MatchManager.Instance.CheckBoardForMatchingClusters(currentCell);
+                        cellsInCluster[0].ItemInside.Upgrade(0);
+                        continue;
+                    }
                         
-                        if (cellsInCluster.Count == 1)
+                    isDeadLock = false;
+                    if (cellsInCluster.Count > thirdThreshold)
+                    {
+                        foreach (BoardCell cell in cellsInCluster)
                         {
-                            cellsInCluster[0].isVisited = false;
-                            cellsInCluster[0].ItemInside.Upgrade(0);
-                            continue;
-                        }
-                        
-                        isDeadLock = false;
-                        if (cellsInCluster.Count > thirdThreshold)
-                        {
-                            foreach (BoardCell cell in cellsInCluster)
-                            {
-                                cell.isVisited = true;
-                                cell.ItemInside.Upgrade(3);
-                            }
-                        }
-                        else if (cellsInCluster.Count > secondThreshold)
-                        {
-                            foreach (BoardCell cell in cellsInCluster)
-                            {
-                                cell.isVisited = true;
-                                cell.ItemInside.Upgrade(2);
-                            }
-                        }
-                        else if (cellsInCluster.Count > firstThreshold)
-                        {
-                            foreach (BoardCell cell in cellsInCluster)
-                            {
-                                cell.isVisited = true;
-                                cell.ItemInside.Upgrade(1);
-                            }
-                        }
-                        else
-                        {
-                            foreach (BoardCell cell in cellsInCluster)
-                            {
-                                cell.isVisited = true;
-                                cell.ItemInside.Upgrade(0);
-                            }
+                            cell.ItemInside.Upgrade(3);
                         }
                     }
-                }
-            }
-
-            for (int i = 0; i < numberOfRows; i++)
-            {
-                for (int j = 0; j < numberOfColumns; j++)
-                {
-                    _boardCells[j, i].isVisited = false;
+                    else if (cellsInCluster.Count > secondThreshold)
+                    {
+                        foreach (BoardCell cell in cellsInCluster)
+                        {
+                            cell.ItemInside.Upgrade(2);
+                        }
+                    }
+                    else if (cellsInCluster.Count > firstThreshold)
+                    {
+                        foreach (BoardCell cell in cellsInCluster)
+                        {
+                            cell.ItemInside.Upgrade(1);
+                        }
+                    }
+                    else
+                    {
+                        foreach (BoardCell cell in cellsInCluster)
+                        {
+                            cell.ItemInside.Upgrade(0);
+                        }
+                    }
                 }
             }
 
@@ -177,14 +162,15 @@ namespace Managers
             {
                 for (int j = numberOfColumns - 1; j > 0; j--)
                 {
-                    Item tempItemHolder = _boardCells[i, j].ItemInside;
-                    BoardCell randomCell = _boardCells[Random.Range(0, numberOfRows), Random.Range(0, j)];
-                    _boardCells[i, j].SetItemInside(randomCell.ItemInside);
+                    BoardCell currentCell = _boardCells[j, i];
+                    BoardCell randomCell = _boardCells[Random.Range(0, j), Random.Range(0, numberOfRows - 1)];
+                    Item tempItemHolder = currentCell.ItemInside;
+                    currentCell.SetItemInside(randomCell.ItemInside);
                     randomCell.SetItemInside(tempItemHolder);
                 }
             }
             
-            BoardCell randomCenterCell = _boardCells[Random.Range(0, numberOfRows), Random.Range(0, numberOfColumns)];
+            BoardCell randomCenterCell = _boardCells[Random.Range(0, numberOfColumns), Random.Range(0, numberOfRows)];
 
             foreach (BoardCell neighbourCell in randomCenterCell.Neighbours.Values)
             {

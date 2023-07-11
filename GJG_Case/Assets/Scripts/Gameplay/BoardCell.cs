@@ -14,7 +14,6 @@ namespace Gameplay
 
     public class BoardCell : MonoBehaviour
     {
-        public bool isVisited;
         public int coordinateX;
         public int coordinateY;
 
